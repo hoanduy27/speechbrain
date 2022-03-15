@@ -196,9 +196,9 @@ def dataio_prep(hparams):
 
     # Split dataset
     train_data, valid_data, test_data = datasets
-    print(train_data.data_ids)
-    print(train_data[0]['signal'].shape)
-    print(train_data[0]['target'].shape)
+    # print(train_data.data_ids)
+    # print(train_data[0]['signal'].shape)
+    # print(train_data[0]['target'].shape)
     
     return train_data, valid_data, test_data
 

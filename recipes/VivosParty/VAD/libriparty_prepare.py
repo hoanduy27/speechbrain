@@ -72,6 +72,7 @@ def create_dataframe(df, json):
         session_id += 1
 
     df = clean_dataframe(df)
+    print(df)
     return df
 
 
@@ -306,3 +307,9 @@ def prepare_libriparty(
     save_dataset(save_json_folder + "/train.json", train_dataset)
     save_dataset(save_json_folder + "/valid.json", valid_dataset)
     save_dataset(save_json_folder + "/test.json", test_dataset)
+
+if __name__ == "__main__":
+    prepare_libriparty(
+        '/home/duy/datasets/VivosPrepare/VivosParty/dataset',
+        '/home/duy/speechbrain/recipes/VivosParty/VAD/test'
+    )

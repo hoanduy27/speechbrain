@@ -1,0 +1,733 @@
+{
+    "example_1": {
+        "wav": {
+            "file": "/home/duy/datasets/VivosPrepare/VivosParty/dataset/dev/session_0/session_0_mixture.wav",
+            "start": 0,
+            "stop": 80000
+        },
+        "speech": [
+            [
+                2.8974505568671995,
+                5
+            ]
+        ]
+    },
+    "example_2": {
+        "wav": {
+            "file": "/home/duy/datasets/VivosPrepare/VivosParty/dataset/dev/session_0/session_0_mixture.wav",
+            "start": 80000,
+            "stop": 160000
+        },
+        "speech": [
+            [
+                0,
+                1.2099505568671995
+            ],
+            [
+                2.6998525625611043,
+                5
+            ]
+        ]
+    },
+    "example_3": {
+        "wav": {
+            "file": "/home/duy/datasets/VivosPrepare/VivosParty/dataset/dev/session_0/session_0_mixture.wav",
+            "start": 160000,
+            "stop": 240000
+        },
+        "speech": [
+            [
+                0,
+                0.6998525625611052
+            ],
+            [
+                4.731350837617946,
+                5
+            ]
+        ]
+    },
+    "example_4": {
+        "wav": {
+            "file": "/home/duy/datasets/VivosPrepare/VivosParty/dataset/dev/session_0/session_0_mixture.wav",
+            "start": 240000,
+            "stop": 320000
+        },
+        "speech": [
+            [
+                0,
+                4.075100837617946
+            ]
+        ]
+    },
+    "example_5": {
+        "wav": {
+            "file": "/home/duy/datasets/VivosPrepare/VivosParty/dataset/dev/session_0/session_0_mixture.wav",
+            "start": 400000,
+            "stop": 480000
+        },
+        "speech": [
+            [
+                1.6386315623726873,
+                4.757419319074213
+            ]
+        ]
+    },
+    "example_6": {
+        "wav": {
+            "file": "/home/duy/datasets/VivosPrepare/VivosParty/dataset/dev/session_0/session_0_mixture.wav",
+            "start": 480000,
+            "stop": 560000
+        },
+        "speech": [
+            [
+                2.2547956627609125,
+                5
+            ]
+        ]
+    },
+    "example_7": {
+        "wav": {
+            "file": "/home/duy/datasets/VivosPrepare/VivosParty/dataset/dev/session_0/session_0_mixture.wav",
+            "start": 560000,
+            "stop": 640000
+        },
+        "speech": [
+            [
+                0,
+                5
+            ]
+        ]
+    },
+    "example_8": {
+        "wav": {
+            "file": "/home/duy/datasets/VivosPrepare/VivosParty/dataset/dev/session_0/session_0_mixture.wav",
+            "start": 640000,
+            "stop": 720000
+        },
+        "speech": [
+            [
+                0,
+                0.957431477167809
+            ],
+            [
+                1.158951722564936,
+                3.815201722564936
+            ]
+        ]
+    },
+    "example_9": {
+        "wav": {
+            "file": "/home/duy/datasets/VivosPrepare/VivosParty/dataset/dev/session_0/session_0_mixture.wav",
+            "start": 720000,
+            "stop": 800000
+        },
+        "speech": [
+            [
+                1.4208350308105153,
+                5
+            ]
+        ]
+    },
+    "example_10": {
+        "wav": {
+            "file": "/home/duy/datasets/VivosPrepare/VivosParty/dataset/dev/session_0/session_0_mixture.wav",
+            "start": 800000,
+            "stop": 880000
+        },
+        "speech": [
+            [
+                0,
+                1.6083350308105153
+            ]
+        ]
+    },
+    "example_11": {
+        "wav": {
+            "file": "/home/duy/datasets/VivosPrepare/VivosParty/dataset/dev/session_0/session_0_mixture.wav",
+            "start": 880000,
+            "stop": 960000
+        },
+        "speech": [
+            [
+                1.0269152651264477,
+                3.9644152651264477
+            ]
+        ]
+    },
+    "example_12": {
+        "wav": {
+            "file": "/home/duy/datasets/VivosPrepare/VivosParty/dataset/dev/session_0/session_0_mixture.wav",
+            "start": 960000,
+            "stop": 1040000
+        },
+        "speech": [
+            [
+                4.786592920704223,
+                5
+            ]
+        ]
+    },
+    "example_13": {
+        "wav": {
+            "file": "/home/duy/datasets/VivosPrepare/VivosParty/dataset/dev/session_0/session_0_mixture.wav",
+            "start": 1040000,
+            "stop": 1120000
+        },
+        "speech": [
+            [
+                0,
+                2.411592920704223
+            ]
+        ]
+    },
+    "example_14": {
+        "wav": {
+            "file": "/home/duy/datasets/VivosPrepare/VivosParty/dataset/dev/session_0/session_0_mixture.wav",
+            "start": 1120000,
+            "stop": 1200000
+        },
+        "speech": [
+            [
+                0.7567156968657116,
+                3.2029896655641465
+            ]
+        ]
+    },
+    "example_15": {
+        "wav": {
+            "file": "/home/duy/datasets/VivosPrepare/VivosParty/dataset/dev/session_0/session_0_mixture.wav",
+            "start": 1200000,
+            "stop": 1280000
+        },
+        "speech": [
+            [
+                3.2485531847582223,
+                5
+            ]
+        ]
+    },
+    "example_16": {
+        "wav": {
+            "file": "/home/duy/datasets/VivosPrepare/VivosParty/dataset/dev/session_0/session_0_mixture.wav",
+            "start": 1280000,
+            "stop": 1360000
+        },
+        "speech": [
+            [
+                0,
+                5
+            ]
+        ]
+    },
+    "example_17": {
+        "wav": {
+            "file": "/home/duy/datasets/VivosPrepare/VivosParty/dataset/dev/session_0/session_0_mixture.wav",
+            "start": 1360000,
+            "stop": 1440000
+        },
+        "speech": [
+            [
+                0,
+                1.4411057327910584
+            ],
+            [
+                1.9030409613495323,
+                5
+            ]
+        ]
+    },
+    "example_18": {
+        "wav": {
+            "file": "/home/duy/datasets/VivosPrepare/VivosParty/dataset/dev/session_0/session_0_mixture.wav",
+            "start": 1440000,
+            "stop": 1520000
+        },
+        "speech": [
+            [
+                0,
+                5
+            ]
+        ]
+    },
+    "example_19": {
+        "wav": {
+            "file": "/home/duy/datasets/VivosPrepare/VivosParty/dataset/dev/session_0/session_0_mixture.wav",
+            "start": 1520000,
+            "stop": 1600000
+        },
+        "speech": [
+            [
+                0,
+                1.3668919341880894
+            ],
+            [
+                1.6361124649070717,
+                5
+            ]
+        ]
+    },
+    "example_20": {
+        "wav": {
+            "file": "/home/duy/datasets/VivosPrepare/VivosParty/dataset/dev/session_0/session_0_mixture.wav",
+            "start": 1600000,
+            "stop": 1680000
+        },
+        "speech": [
+            [
+                0,
+                5
+            ]
+        ]
+    },
+    "example_21": {
+        "wav": {
+            "file": "/home/duy/datasets/VivosPrepare/VivosParty/dataset/dev/session_0/session_0_mixture.wav",
+            "start": 1680000,
+            "stop": 1760000
+        },
+        "speech": [
+            [
+                0,
+                0.999597474283874
+            ],
+            [
+                2.348294294097684,
+                5
+            ]
+        ]
+    },
+    "example_22": {
+        "wav": {
+            "file": "/home/duy/datasets/VivosPrepare/VivosParty/dataset/dev/session_0/session_0_mixture.wav",
+            "start": 1760000,
+            "stop": 1840000
+        },
+        "speech": [
+            [
+                0,
+                0.6920442940976841
+            ],
+            [
+                1.3645815847723526,
+                5
+            ]
+        ]
+    },
+    "example_23": {
+        "wav": {
+            "file": "/home/duy/datasets/VivosPrepare/VivosParty/dataset/dev/session_0/session_0_mixture.wav",
+            "start": 1840000,
+            "stop": 1920000
+        },
+        "speech": [
+            [
+                0,
+                2.855708290800834
+            ],
+            [
+                3.2618519368142387,
+                5
+            ]
+        ]
+    },
+    "example_24": {
+        "wav": {
+            "file": "/home/duy/datasets/VivosPrepare/VivosParty/dataset/dev/session_0/session_0_mixture.wav",
+            "start": 1920000,
+            "stop": 2000000
+        },
+        "speech": [
+            [
+                0,
+                1.1681019368142387
+            ]
+        ]
+    },
+    "example_25": {
+        "wav": {
+            "file": "/home/duy/datasets/VivosPrepare/VivosParty/dataset/dev/session_0/session_0_mixture.wav",
+            "start": 2000000,
+            "stop": 2080000
+        },
+        "speech": [
+            [
+                4.117258947565176,
+                5
+            ]
+        ]
+    },
+    "example_26": {
+        "wav": {
+            "file": "/home/duy/datasets/VivosPrepare/VivosParty/dataset/dev/session_0/session_0_mixture.wav",
+            "start": 2080000,
+            "stop": 2160000
+        },
+        "speech": [
+            [
+                0,
+                0.8985089475651762
+            ],
+            [
+                3.5837863962048857,
+                5
+            ]
+        ]
+    },
+    "example_27": {
+        "wav": {
+            "file": "/home/duy/datasets/VivosPrepare/VivosParty/dataset/dev/session_0/session_0_mixture.wav",
+            "start": 2160000,
+            "stop": 2240000
+        },
+        "speech": [
+            [
+                0,
+                5
+            ]
+        ]
+    },
+    "example_28": {
+        "wav": {
+            "file": "/home/duy/datasets/VivosPrepare/VivosParty/dataset/dev/session_0/session_0_mixture.wav",
+            "start": 2240000,
+            "stop": 2320000
+        },
+        "speech": [
+            [
+                0,
+                5
+            ]
+        ]
+    },
+    "example_29": {
+        "wav": {
+            "file": "/home/duy/datasets/VivosPrepare/VivosParty/dataset/dev/session_0/session_0_mixture.wav",
+            "start": 2320000,
+            "stop": 2400000
+        },
+        "speech": [
+            [
+                0,
+                2.104739423338202
+            ],
+            [
+                4.188782912668017,
+                5
+            ]
+        ]
+    },
+    "example_30": {
+        "wav": {
+            "file": "/home/duy/datasets/VivosPrepare/VivosParty/dataset/dev/session_0/session_0_mixture.wav",
+            "start": 2400000,
+            "stop": 2480000
+        },
+        "speech": [
+            [
+                0,
+                1.8137829126680174
+            ]
+        ]
+    },
+    "example_31": {
+        "wav": {
+            "file": "/home/duy/datasets/VivosPrepare/VivosParty/dataset/dev/session_0/session_0_mixture.wav",
+            "start": 2480000,
+            "stop": 2560000
+        },
+        "speech": [
+            [
+                3.176978434171019,
+                5
+            ]
+        ]
+    },
+    "example_32": {
+        "wav": {
+            "file": "/home/duy/datasets/VivosPrepare/VivosParty/dataset/dev/session_0/session_0_mixture.wav",
+            "start": 2560000,
+            "stop": 2640000
+        },
+        "speech": [
+            [
+                0,
+                5
+            ]
+        ]
+    },
+    "example_33": {
+        "wav": {
+            "file": "/home/duy/datasets/VivosPrepare/VivosParty/dataset/dev/session_0/session_0_mixture.wav",
+            "start": 2640000,
+            "stop": 2720000
+        },
+        "speech": [
+            [
+                0,
+                4.819899035100718
+            ]
+        ]
+    },
+    "example_34": {
+        "wav": {
+            "file": "/home/duy/datasets/VivosPrepare/VivosParty/dataset/dev/session_0/session_0_mixture.wav",
+            "start": 2720000,
+            "stop": 2800000
+        },
+        "speech": [
+            [
+                0.2174766487735269,
+                5
+            ]
+        ]
+    },
+    "example_35": {
+        "wav": {
+            "file": "/home/duy/datasets/VivosPrepare/VivosParty/dataset/dev/session_0/session_0_mixture.wav",
+            "start": 2800000,
+            "stop": 2880000
+        },
+        "speech": [
+            [
+                0,
+                2.933851625304186
+            ]
+        ]
+    },
+    "example_36": {
+        "wav": {
+            "file": "/home/duy/datasets/VivosPrepare/VivosParty/dataset/dev/session_0/session_0_mixture.wav",
+            "start": 2960000,
+            "stop": 3040000
+        },
+        "speech": [
+            [
+                3.364172856192056,
+                5
+            ]
+        ]
+    },
+    "example_37": {
+        "wav": {
+            "file": "/home/duy/datasets/VivosPrepare/VivosParty/dataset/dev/session_0/session_0_mixture.wav",
+            "start": 3040000,
+            "stop": 3120000
+        },
+        "speech": [
+            [
+                0,
+                0.42667285619205586
+            ]
+        ]
+    },
+    "example_38": {
+        "wav": {
+            "file": "/home/duy/datasets/VivosPrepare/VivosParty/dataset/dev/session_0/session_0_mixture.wav",
+            "start": 3120000,
+            "stop": 3200000
+        },
+        "speech": [
+            [
+                0.008762901096758924,
+                5
+            ]
+        ]
+    },
+    "example_39": {
+        "wav": {
+            "file": "/home/duy/datasets/VivosPrepare/VivosParty/dataset/dev/session_0/session_0_mixture.wav",
+            "start": 3200000,
+            "stop": 3280000
+        },
+        "speech": [
+            [
+                0,
+                1.133762901096759
+            ],
+            [
+                1.771846104311436,
+                5
+            ]
+        ]
+    },
+    "example_40": {
+        "wav": {
+            "file": "/home/duy/datasets/VivosPrepare/VivosParty/dataset/dev/session_0/session_0_mixture.wav",
+            "start": 3280000,
+            "stop": 3360000
+        },
+        "speech": [
+            [
+                0,
+                0.08434610431143597
+            ],
+            [
+                2.5522329816354556,
+                5
+            ]
+        ]
+    },
+    "example_41": {
+        "wav": {
+            "file": "/home/duy/datasets/VivosPrepare/VivosParty/dataset/dev/session_0/session_0_mixture.wav",
+            "start": 3360000,
+            "stop": 3440000
+        },
+        "speech": [
+            [
+                0,
+                1.9272329816354556
+            ]
+        ]
+    },
+    "example_42": {
+        "wav": {
+            "file": "/home/duy/datasets/VivosPrepare/VivosParty/dataset/dev/session_0/session_0_mixture.wav",
+            "start": 3440000,
+            "stop": 3520000
+        },
+        "speech": [
+            [
+                1.4758208701051387,
+                5
+            ]
+        ]
+    },
+    "example_43": {
+        "wav": {
+            "file": "/home/duy/datasets/VivosPrepare/VivosParty/dataset/dev/session_0/session_0_mixture.wav",
+            "start": 3520000,
+            "stop": 3600000
+        },
+        "speech": [
+            [
+                0,
+                0.28832087010513874
+            ],
+            [
+                3.7548074727751555,
+                5
+            ]
+        ]
+    },
+    "example_44": {
+        "wav": {
+            "file": "/home/duy/datasets/VivosPrepare/VivosParty/dataset/dev/session_0/session_0_mixture.wav",
+            "start": 3600000,
+            "stop": 3680000
+        },
+        "speech": [
+            [
+                0,
+                1.8173074727751555
+            ]
+        ]
+    },
+    "example_45": {
+        "wav": {
+            "file": "/home/duy/datasets/VivosPrepare/VivosParty/dataset/dev/session_0/session_0_mixture.wav",
+            "start": 3680000,
+            "stop": 3760000
+        },
+        "speech": [
+            [
+                1.6447492118696516,
+                4.207249211869652
+            ]
+        ]
+    },
+    "example_46": {
+        "wav": {
+            "file": "/home/duy/datasets/VivosPrepare/VivosParty/dataset/dev/session_0/session_0_mixture.wav",
+            "start": 3920000,
+            "stop": 4000000
+        },
+        "speech": [
+            [
+                4.222124780984302,
+                5
+            ]
+        ]
+    },
+    "example_47": {
+        "wav": {
+            "file": "/home/duy/datasets/VivosPrepare/VivosParty/dataset/dev/session_0/session_0_mixture.wav",
+            "start": 4000000,
+            "stop": 4080000
+        },
+        "speech": [
+            [
+                0,
+                1.815874780984302
+            ],
+            [
+                3.133632493297796,
+                5
+            ]
+        ]
+    },
+    "example_48": {
+        "wav": {
+            "file": "/home/duy/datasets/VivosPrepare/VivosParty/dataset/dev/session_0/session_0_mixture.wav",
+            "start": 4080000,
+            "stop": 4160000
+        },
+        "speech": [
+            [
+                0,
+                1.0852295513540184
+            ],
+            [
+                2.6432217958191018,
+                5
+            ]
+        ]
+    },
+    "example_49": {
+        "wav": {
+            "file": "/home/duy/datasets/VivosPrepare/VivosParty/dataset/dev/session_0/session_0_mixture.wav",
+            "start": 4160000,
+            "stop": 4240000
+        },
+        "speech": [
+            [
+                1.735704845665282,
+                4.923204845665282
+            ],
+            [
+                0,
+                0.04947179581910177
+            ]
+        ]
+    },
+    "example_50": {
+        "wav": {
+            "file": "/home/duy/datasets/VivosPrepare/VivosParty/dataset/dev/session_0/session_0_mixture.wav",
+            "start": 4640000,
+            "stop": 4720000
+        },
+        "speech": [
+            [
+                0.21809962119351667,
+                3.374557103184088
+            ],
+            [
+                3.8138108689320234,
+                5
+            ]
+        ]
+    },
+    "example_51": {
+        "wav": {
+            "file": "/home/duy/datasets/VivosPrepare/VivosParty/dataset/dev/session_0/session_0_mixture.wav",
+            "start": 4720000,
+            "stop": 4800000
+        },
+        "speech": [
+            [
+                0,
+                2.9542818850599133
+            ]
+        ]
+    }
+}

@@ -1,0 +1,101 @@
+######################
+# User defined Paths #
+######################
+
+# folder where created dataset will be stored.
+out_folder: /home/duy/datasets/VivosPrepare/VivosParty/dataset
+metadata_folder: /home/duy/datasets/VivosPrepare/VivosParty/dataset/metadata
+samplerate: 16000 # dataset samplerate (should be <=16000)
+
+save_wet_sources: False
+# whether to save oracle reverberated clean-speech sources.
+
+save_dry_sources: False
+# whether to save oracle dry, non-reverberated clean-speech sources.
+
+#########################
+# Source datasets paths #
+#########################
+
+vivos_root: /home/duy/datasets/VivosPrepare/vivos
+# root path to librispeech: download from https://openslr.org/12/
+
+vivos_folders: # folders one wants to use for the train dataset.
+  train:
+    - !ref <vivos_root>/train/ # e.g. clean-100 etc.
+  dev:
+    - !ref <vivos_root>/dev/
+  eval:
+    - !ref <vivos_root>/test/
+
+rirs_noises_root: /home/duy/datasets/libriparty_1/RIRS_NOISES
+rirs_folders:
+  - !ref <rirs_noises_root>/simulated_rirs/
+  - !ref <rirs_noises_root>/real_rirs_isotropic_noises
+noises_folders:
+  - !ref <rirs_noises_root>/pointsource_noises/
+music_folders:
+  - !ref /home/duy/datasets/duy-vivos/vivos-with-bg/background/youtube_converted_wavs/
+backgrounds_root: /home/duy/datasets/libriparty_1/QUT_NOISES_16k/
+# backgrounds_root: null
+# optional background noise from QUT (required for "official" dataset)
+# One can use also other background noises.
+
+
+#########################################################################
+# Metadata creation parameters (Used only for custom dataset generation).
+#########################################################################
+
+seed: 1234  # e.g, 1234
+split_factors:
+  - 0.7
+  - 0.2
+  - 0.1
+# split factor used to split RIRs, backgrounds and noises.
+# for speech one can use librispeech official splits
+
+n_sessions: # number of synthetic scenes
+  train: 20
+  dev: 20
+  eval: 20
+n_speakers: 2 # max number of speakers in each session
+interval_factor_speech: 5
+# this parameter controls amount of silence and
+# probability of overlapped speech.
+# the LOWER the less silence and more overlapped speech.
+
+interval_factor_noises: 5
+# same parameter but for impulsive noises.
+# It controls the interval between two impulsive noises.
+
+max_length: 30 # max length in seconds for each session.
+
+# we use gaussian distribution for speech and noise levels.
+speech_lvl_min: -35 # (dB) absolute minimum level for speech.
+speech_lvl_max: -3 # (dB) absolute maximum level for speech.
+speech_lvl_mean: -15 # (dB) mean for speech level.
+speech_lvl_var: 3 # (dB) variance for speech level.
+
+imp_lvl_min: -40 # (dB) absolute minimum level for noises.
+imp_lvl_rel_max: 3
+# (dB) absolute maximum for noises relative
+# to minimum speech level in the whole session.
+imp_lvl_mean: -33 # (dB) mean for noise level
+imp_lvl_var: 2 # (dB) variance for noise level
+
+music_lvl_min: -40 # (dB) absolute minimum level for music.
+music_lvl_rel_max: 10
+# (dB) absolute maximum for music relative
+# to minimum speech level in the whole session.
+music_lvl_mean: -20 # (dB) mean for music level
+music_lvl_var: 3 # (dB) variance for music level
+music_min_duration: 5 # (s) minimum duration of music
+music_max_duration: 10 # (s) maximum duration of music
+
+background_lvl_min: -60 # (dB) absolute minimum level for background.
+background_lvl_rel_max: -12
+# (dB) absolute maximum for background relative
+# to minimum speech level in the whole session.
+
+background_prob: 0.7
+rir_prob: 0.5
