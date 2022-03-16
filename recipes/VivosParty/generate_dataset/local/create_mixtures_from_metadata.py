@@ -9,6 +9,7 @@ Samuele Cornell, 2020
 
 
 import os
+from more_itertools import sample
 import torch
 import json
 import numpy as np
@@ -16,12 +17,20 @@ import torchaudio
 from speechbrain.processing.signal_processing import rescale, reverberate
 
 
+def sample_audio(c_audio, num_frames):
+    if c_audio.size(0) >= num_frames:
+        start = np.random.randint(0, c_audio.size(0) - num_frames)
+        return c_audio[start : start + num_frames]
+    else:
+        loop_n = num_frames // c_audio.size(0)
+        remainer = num_frames - loop_n * c_audio.size(0)
+        return torch.concat([c_audio]*loop_n + [c_audio[0:remainer]])
+    
 def create_mixture(session_n, output_dir, params, metadata):
     os.makedirs(os.path.join(output_dir, session_n), exist_ok=True)
 
     session_meta = {}
     speakers = [x for x in metadata.keys() if x not in ["noises", "background", "musics"]]
-
     tot_length = int(
         np.ceil(metadata["background"]["stop"] * params["samplerate"])
     )
@@ -57,13 +66,14 @@ def create_mixture(session_n, output_dir, params, metadata):
             if params["save_dry_sources"]:
                 dry[dry_start:dry_stop] += c_audio
             # we add now reverb and put it in wet
-            c_rir, fs = torchaudio.load(
-                os.path.join(params["rirs_noises_root"], utt["rir"])
-            )
-            assert fs == params["samplerate"]
-            c_rir = c_rir[utt["rir_channel"], :]
+            if utt["rir"] is not None:
+                c_rir, fs = torchaudio.load(
+                    os.path.join(params["rirs_noises_root"], utt["rir"])
+                )
+                assert fs == params["samplerate"]
+                c_rir = c_rir[utt["rir_channel"], :]
 
-            # c_audio = reverberate(c_audio, c_rir, "peak")
+                c_audio = reverberate(c_audio, c_rir, "peak")
             # tof is not accounted because in reverberate we shift by it
             wet_start = dry_start
             wet_stop = dry_stop  # + early_rev_samples
@@ -136,15 +146,22 @@ def create_mixture(session_n, output_dir, params, metadata):
 
         # we save it in dry
         dry_start = int(noise_event["start"] * params["samplerate"])
+        dry_stop = int(noise_event["stop"] * params["samplerate"])
         # dry_stop = dry_start + c_audio.shape[-1]
-        # we add now reverb and put it in wet
-        c_rir, fs = torchaudio.load(
-            os.path.join(params["rirs_noises_root"], noise_event["rir"])
-        )
-        assert fs == params["samplerate"]
-        c_rir = c_rir[noise_event["rir_channel"], :]
 
-        c_audio = reverberate(c_audio, c_rir, "peak")
+        # Sample the c_audio
+        duration = dry_stop - dry_start + 1
+        c_audio = sample_audio(c_audio, duration)
+
+        # we add now reverb and put it in wet
+        if noise_event["rir"] is not None:
+            c_rir, fs = torchaudio.load(
+                os.path.join(params["rirs_noises_root"], noise_event["rir"])
+            )
+            assert fs == params["samplerate"]
+            c_rir = c_rir[noise_event["rir_channel"], :]
+
+            c_audio = reverberate(c_audio, c_rir, "peak")        
 
         # tof is not accounted because in reverberate we shift by it
         wet_start = dry_start
@@ -153,8 +170,8 @@ def create_mixture(session_n, output_dir, params, metadata):
     # Add music noise
     for music_event in metadata["musics"]:
         c_audio, fs = torchaudio.load(
-            # os.path.join(params["rirs_noises_root"], music_event["file"])
-            music_event["file"], 
+            os.path.join(params["musics_root"], music_event["file"])
+            # music_event["file"], 
         )
         assert fs == params["samplerate"]
         if len(c_audio.shape) > 1:  # multichannel
@@ -171,20 +188,21 @@ def create_mixture(session_n, output_dir, params, metadata):
         # we save it in dry
         dry_start = int(music_event["start"] * params["samplerate"])
         dry_stop = int(music_event["stop"] * params["samplerate"])
-        # we add now reverb and put it in wet
-        c_rir, fs = torchaudio.load(
-            os.path.join(params["rirs_noises_root"], music_event["rir"])
-        )
-        assert fs == params["samplerate"]
-        c_rir = c_rir[music_event["rir_channel"], :]
-
-        c_audio = reverberate(c_audio, c_rir, "peak")
-
+        
         # Sample the c_audio
-        interval = dry_stop - dry_start + 1
-        if c_audio.size(0) >= interval:
-            start = torch.randint(0, c_audio.size(0) - interval, (1,))[0]
-            c_audio = c_audio[start : start + interval]
+        duration = dry_stop - dry_start + 1
+        c_audio = sample_audio(c_audio, duration)
+
+        # we add now reverb and put it in wet
+        if music_event["rir"] is not None:
+            c_rir, fs = torchaudio.load(
+                os.path.join(params["rirs_noises_root"], music_event["rir"])
+            )
+            assert fs == params["samplerate"]
+            c_rir = c_rir[music_event["rir_channel"], :]
+
+            c_audio = reverberate(c_audio, c_rir, "peak")
+
     
         # tof is not accounted because in reverberate we shift by it
         # print(c_audio)
@@ -192,36 +210,37 @@ def create_mixture(session_n, output_dir, params, metadata):
         mixture[wet_start : wet_start + len(c_audio)] += c_audio
 
     # add background
-    if metadata["background"]["file"]:
-        c_audio, fs = torchaudio.load(
-            os.path.join(
-                params["backgrounds_root"], metadata["background"]["file"]
-            ),
-            frame_offset=metadata["background"]["orig_start"],
-            num_frames=mixture.shape[-1],
-        )
-        assert fs == params["samplerate"]
-        if len(c_audio.shape) > 1:  # multichannel
-            c_audio = c_audio[metadata["background"]["channel"], :]
-            c_audio = c_audio - torch.mean(c_audio)
-        c_audio = rescale(
-            c_audio,
-            c_audio.size(0),
-            metadata["background"]["lvl"],
-            scale="dB",
-            amp_type="avg",
-        )
-        mixture += c_audio
+    if metadata["background"]["lvl"]:
+        if metadata["background"]["file"]:
+            c_audio, fs = torchaudio.load(
+                os.path.join(
+                    params["backgrounds_root"], metadata["background"]["file"]
+                ),
+                frame_offset=metadata["background"]["orig_start"],
+                num_frames=mixture.shape[-1],
+            )
+            assert fs == params["samplerate"]
+            if len(c_audio.shape) > 1:  # multichannel
+                c_audio = c_audio[metadata["background"]["channel"], :]
+                c_audio = c_audio - torch.mean(c_audio)
+            c_audio = rescale(
+                c_audio,
+                c_audio.size(0),
+                metadata["background"]["lvl"],
+                scale="dB",
+                amp_type="avg",
+            )
+            mixture += c_audio
 
-    else:
-        # add gaussian noise
-        mixture += rescale(
-            torch.normal(0, 1, mixture.shape),
-            mixture.size(0),
-            metadata["background"]["lvl"],
-            scale="dB",
-            amp_type="peak",
-        )
+        else:
+            # add gaussian noise
+            mixture += rescale(
+                torch.normal(0, 1, mixture.shape),
+                mixture.size(0),
+                metadata["background"]["lvl"],
+                scale="dB",
+                amp_type="peak",
+            )
 
     # save total mixture
     mixture = torch.clamp(mixture, min=-1, max=1)

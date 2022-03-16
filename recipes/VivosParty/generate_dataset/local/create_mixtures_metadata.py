@@ -17,6 +17,9 @@ import torchaudio
 
 
 def _read_metadata(file_path, configs):
+    if file_path is None:
+        return None, None
+
     meta = torchaudio.info(file_path)
     if meta.num_channels > 1:
         channel = np.random.randint(0, meta.num_channels - 1)
@@ -42,7 +45,8 @@ def create_metadata(
     words_dict,
     rir_list,
     impulsive_noises_list=None,
-    musics_list = None,
+    vocal_musics_list = None,
+    off_vocal_musics_list = None,
     background_noises_list=None,
 ):
 
@@ -58,9 +62,9 @@ def create_metadata(
     for n_sess in tqdm(range(n_sessions)):
         has_background = draw(background_prob)
         if has_background:
-            session_rir_prob = rir_prob
+            spk_rir_prob = rir_prob
         else:
-            session_rir_prob = 1.0
+            spk_rir_prob = 1.0
 
         # we sample randomly n_speakers ids
         c_speakers = np.random.choice(
@@ -70,11 +74,65 @@ def create_metadata(
         c_utts = [utterances_dict[spk_id] for spk_id in c_speakers]
 
         activity = {}
+        tot_length = 0
+        min_spk_lvl = np.inf
+        def add_noise(noises_list, noise_configs, activ_name, tot_length):
+            new_tot_length = tot_length
+            root = 'rirs_noises_root' if activ_name == 'noises' else 'musics_root'
+            if noises_list:
+                activity[activ_name] = []
+                # sampling intervals for impulsive noises.
+                intervals = np.random.exponential(
+                    configs["interval_factor_noises"], len(noises_list)
+                )
+                cursor = 0
+                for j, wait in enumerate(intervals):
+                    # we sample with replacement an impulsive noise.
+                    c_noise = np.random.choice(noises_list, 1)[0]
+                    meta, channel = _read_metadata(c_noise, configs)
+                    has_rir = draw(rir_prob)
+                    c_rir = np.random.choice(rir_list, 1)[0] if has_rir else None
+                    # we reverberate it.
+                    meta_rir, rir_channel = _read_metadata(c_rir, configs)
+                    # length = meta.num_frames / meta.sample_rate
+                    # Avoiding too long audio
+                    length = np.random.uniform(
+                        noise_configs["min_duration"],
+                        noise_configs["max_duration"],
+                    )
+                    
+                    cursor += wait
+                    if cursor + length > configs["max_length"]:
+                        break
+                    lvl = np.clip(
+                        np.random.normal(
+                            noise_configs["lvl_mean"], noise_configs["lvl_var"]
+                        ),
+                        noise_configs["lvl_min"],
+                        min(min_spk_lvl + noise_configs["lvl_rel_max"], 0),
+                    )
+
+                    activity[activ_name].append(
+                        {
+                            "start": cursor,
+                            "stop": cursor + length,
+                            "rir": str(
+                                Path(c_rir).relative_to(configs["rirs_noises_root"])
+                            ) if has_rir else None,
+                            "file": str(
+                                Path(c_noise).relative_to(configs[root])
+                            ),
+                            "lvl": lvl,
+                            "channel": channel,
+                            "rir_channel": rir_channel,
+                        }
+                    )
+                    new_tot_length = max(new_tot_length, cursor + length)
+                    cursor += length
+                return new_tot_length
         for spk in c_speakers:
             activity[spk] = []
 
-        tot_length = 0
-        min_spk_lvl = np.inf
         for i in range(len(c_speakers)):
             c_spk = c_speakers[i]
             spk_utts = c_utts[i]
@@ -86,10 +144,10 @@ def create_metadata(
             cursor = 0
             for j, wait in enumerate(intervals):
                 meta, channel = _read_metadata(spk_utts[j], configs)
-                get_rir = draw(rir_prob)
-                c_rir = np.random.choice(rir_list, 1)[0] if get_rir else None
+                has_rir = draw(spk_rir_prob)
+                c_rir = np.random.choice(rir_list, 1)[0] if has_rir else None
                 # check if the rir is monaural
-                meta_rir, rir_channel = _read_metadata(c_rir, configs) if get_rir else (None, None)
+                meta_rir, rir_channel = _read_metadata(c_rir, configs)
 
                 length = meta.num_frames / meta.sample_rate
                 id_utt = Path(spk_utts[j]).stem
@@ -113,7 +171,7 @@ def create_metadata(
                         "words": words_dict[id_utt],
                         "rir": str(
                             Path(c_rir).relative_to(configs["rirs_noises_root"])
-                        ) if c_rir is not None else None,
+                        ) if has_rir else None,
                         "utt_id": id_utt,
                         "file": str(
                             Path(spk_utts[j]).relative_to(
@@ -127,150 +185,172 @@ def create_metadata(
                 )
                 tot_length = max(cursor + length, tot_length)
                 cursor = cursor + length
-
+        
+        tot_length = add_noise(impulsive_noises_list, configs['imp'], 'noises', tot_length)
+        tot_length = add_noise(vocal_musics_list + off_vocal_musics_list, configs['music'], 'musics', tot_length)
+  
         # we add also impulsive noises as it were a speaker
-        if impulsive_noises_list:
-            activity["noises"] = []
-            # sampling intervals for impulsive noises.
-            intervals = np.random.exponential(
-                configs["interval_factor_noises"], len(impulsive_noises_list)
-            )
-            cursor = 0
-            for j, wait in enumerate(intervals):
-                # we sample with replacement an impulsive noise.
-                c_noise = np.random.choice(impulsive_noises_list, 1)[0]
-                meta, channel = _read_metadata(c_noise, configs)
-                c_rir = np.random.choice(rir_list, 1)[0]
-                # we reverberate it.
-                meta_rir, rir_channel = _read_metadata(c_rir, configs)
-                length = meta.num_frames / meta.sample_rate
-                cursor += wait
-                if cursor + length > configs["max_length"]:
-                    break
-                lvl = np.clip(
-                    np.random.normal(
-                        configs["imp_lvl_mean"], configs["imp_lvl_var"]
+        # if impulsive_noises_list:
+        #     activity["noises"] = []
+        #     # sampling intervals for impulsive noises.
+        #     intervals = np.random.exponential(
+        #         configs["interval_factor_noises"], len(impulsive_noises_list)
+        #     )
+        #     cursor = 0
+        #     for j, wait in enumerate(intervals):
+        #         # we sample with replacement an impulsive noise.
+        #         c_noise = np.random.choice(impulsive_noises_list, 1)[0]
+        #         meta, channel = _read_metadata(c_noise, configs)
+        #         has_rir = draw(rir_prob)
+        #         c_rir = np.random.choice(rir_list, 1)[0] if has_rir else None
+        #         # we reverberate it.
+        #         meta_rir, rir_channel = _read_metadata(c_rir, configs)
+        #         # length = meta.num_frames / meta.sample_rate
+        #         # Avoiding too long audio
+        #         length = np.random.uniform(
+        #             configs["imp_min_duration"],
+        #             configs["imp_max_duration"],
+        #         )
+                
+        #         cursor += wait
+        #         if cursor + length > configs["max_length"]:
+        #             break
+        #         lvl = np.clip(
+        #             np.random.normal(
+        #                 configs["imp_lvl_mean"], configs["imp_lvl_var"]
+        #             ),
+        #             configs["imp_lvl_min"],
+        #             min(min_spk_lvl + configs["imp_lvl_rel_max"], 0),
+        #         )
+
+        #         activity["noises"].append(
+        #             {
+        #                 "start": cursor,
+        #                 "stop": cursor + length,
+        #                 "rir": str(
+        #                     Path(c_rir).relative_to(configs["rirs_noises_root"])
+        #                 ) if has_rir else None,
+        #                 "file": str(
+        #                     Path(c_noise)
+        #                     # .relative_to(configs["rirs_noises_root"])
+        #                 ),
+        #                 "lvl": lvl,
+        #                 "channel": channel,
+        #                 "rir_channel": rir_channel,
+        #             }
+        #         )
+        #         tot_length = max(tot_length, cursor + length)
+        #         cursor += length
+
+        # if musics_list:
+        #     np.random.shuffle(musics_list)
+        #     activity["musics"] = []
+        #     # sampling intervals for impulsive noises.
+        #     intervals = np.random.exponential(
+        #         configs["interval_factor_noises"], len(musics_list)
+        #     )
+        #     cursor = 0
+        #     for j, wait in enumerate(intervals):
+        #         # we sample with replacement an impulsive noise.
+        #         c_musics = np.random.choice(musics_list, 1)[0]
+        #         meta, channel = _read_metadata(c_noise, configs)
+        #         has_rir = draw(rir_prob)
+        #         c_rir = np.random.choice(rir_list, 1)[0] if has_rir else None
+        #         # we reverberate it.
+        #         meta_rir, rir_channel = _read_metadata(c_rir, configs)
+        #         # length = meta.num_frames / meta.sample_rate
+        #         length = np.random.uniform(
+        #             configs["imp_min_duration"],
+        #             configs["imp_max_duration"],
+        #         )
+
+        #         # print(length)
+        #         cursor += wait
+        #         if cursor + length > configs["max_length"]:
+        #             break
+        #         lvl = np.clip(
+        #             np.random.normal(
+        #                 configs["music_lvl_mean"], configs["music_lvl_var"]
+        #             ),
+        #             configs["music_lvl_min"],
+        #             min(min_spk_lvl + configs["music_lvl_rel_max"], 0),
+        #         )
+
+        #         activity["musics"].append(
+        #             {
+        #                 "start": cursor,
+        #                 "stop": cursor + length,
+        #                 "rir": str(
+        #                     Path(c_rir).relative_to(configs["rirs_noises_root"])
+        #                 ) if has_rir else None,
+        #                 "file": str(
+        #                     Path(c_musics)
+        #                     # .relative_to(configs["rirs_noises_root"])
+        #                 ),
+        #                 "lvl": lvl,
+        #                 "channel": channel,
+        #                 "rir_channel": rir_channel,
+        #             }
+        #         )
+        #         tot_length = max(tot_length, cursor + length)
+        #         cursor += length
+        if has_background:
+            if background_noises_list:
+                # we add also background noise.
+                lvl = np.random.randint(
+                    configs["background_lvl_min"],
+                    min(min_spk_lvl + configs["background_lvl_rel_max"], 0),
+                )
+                # we scale the level but do not reverberate.
+                background = np.random.choice(background_noises_list, 1)[0]
+                meta, channel = _read_metadata(background, configs)
+                assert (
+                    meta.num_frames >= configs["max_length"] * configs["samplerate"]
+                ), "background noise files should be >= max_length in duration"
+                offset = 0
+                if meta.num_frames > configs["max_length"] * configs["samplerate"]:
+                    offset = np.random.randint(
+                        0,
+                        meta.num_frames
+                        - int(configs["max_length"] * configs["samplerate"]),
+                    )
+
+                activity["background"] = {
+                    "start": 0,
+                    "stop": tot_length,
+                    "file": str(
+                        Path(background).relative_to(configs["backgrounds_root"])
                     ),
-                    configs["imp_lvl_min"],
-                    min(min_spk_lvl + configs["imp_lvl_rel_max"], 0),
+                    "lvl": lvl,
+                    "orig_start": offset,
+                    "orig_stop": offset + int(tot_length * configs["samplerate"]),
+                    "channel": channel,
+                }
+            else:
+                # we use as background gaussian noise
+                lvl = np.random.randint(
+                    configs["background_lvl_min"],
+                    min(min_spk_lvl + configs["background_lvl_rel_max"], 0),
                 )
-
-                activity["noises"].append(
-                    {
-                        "start": cursor,
-                        "stop": cursor + length,
-                        "rir": str(
-                            Path(c_rir).relative_to(configs["rirs_noises_root"])
-                        ),
-                        "file": str(
-                            Path(c_noise)
-                            # .relative_to(configs["rirs_noises_root"])
-                        ),
-                        "lvl": lvl,
-                        "channel": channel,
-                        "rir_channel": rir_channel,
-                    }
-                )
-                tot_length = max(tot_length, cursor + length)
-                cursor += length
-
-        if musics_list:
-            np.random.shuffle(musics_list)
-            activity["musics"] = []
-            # sampling intervals for impulsive noises.
-            intervals = np.random.exponential(
-                configs["interval_factor_noises"], len(musics_list)
-            )
-            cursor = 0
-            for j, wait in enumerate(intervals):
-                # we sample with replacement an impulsive noise.
-                c_musics = np.random.choice(musics_list, 1)[0]
-                meta, channel = _read_metadata(c_noise, configs)
-                c_rir = np.random.choice(rir_list, 1)[0]
-                # we reverberate it.
-                meta_rir, rir_channel = _read_metadata(c_rir, configs)
-                # length = meta.num_frames / meta.sample_rate
-                length = np.random.uniform(
-                    configs["music_min_duration"],
-                    configs["music_max_duration"],
-                    1
-                )[0]
-                # print(length)
-                cursor += wait
-                if cursor + length > configs["max_length"]:
-                    break
-                lvl = np.clip(
-                    np.random.normal(
-                        configs["music_lvl_mean"], configs["music_lvl_var"]
-                    ),
-                    configs["music_lvl_min"],
-                    min(min_spk_lvl + configs["music_lvl_rel_max"], 0),
-                )
-
-                activity["musics"].append(
-                    {
-                        "start": cursor,
-                        "stop": cursor + length,
-                        "rir": str(
-                            Path(c_rir).relative_to(configs["rirs_noises_root"])
-                        ),
-                        "file": str(
-                            Path(c_musics)
-                            # .relative_to(configs["rirs_noises_root"])
-                        ),
-                        "lvl": lvl,
-                        "channel": channel,
-                        "rir_channel": rir_channel,
-                    }
-                )
-                tot_length = max(tot_length, cursor + length)
-                cursor += length
-        if background_noises_list:
-            # we add also background noise.
-            lvl = np.random.randint(
-                configs["background_lvl_min"],
-                min(min_spk_lvl + configs["background_lvl_rel_max"], 0),
-            )
-            # we scale the level but do not reverberate.
-            background = np.random.choice(background_noises_list, 1)[0]
-            meta, channel = _read_metadata(background, configs)
-            assert (
-                meta.num_frames >= configs["max_length"] * configs["samplerate"]
-            ), "background noise files should be >= max_length in duration"
-            offset = 0
-            if meta.num_frames > configs["max_length"] * configs["samplerate"]:
-                offset = np.random.randint(
-                    0,
-                    meta.num_frames
-                    - int(configs["max_length"] * configs["samplerate"]),
-                )
-
-            activity["background"] = {
-                "start": 0,
-                "stop": tot_length,
-                "file": str(
-                    Path(background).relative_to(configs["backgrounds_root"])
-                ),
-                "lvl": lvl,
-                "orig_start": offset,
-                "orig_stop": offset + int(tot_length * configs["samplerate"]),
-                "channel": channel,
-            }
+                activity["background"] = {
+                    "start": 0,
+                    "stop": tot_length,
+                    "file": None,
+                    "lvl": lvl,
+                    "orig_start": None,
+                    "orig_stop": None,
+                    "channel": None,
+                }
         else:
-            # we use as background gaussian noise
-            lvl = np.random.randint(
-                configs["background_lvl_min"],
-                min(min_spk_lvl + configs["background_lvl_rel_max"], 0),
-            )
             activity["background"] = {
-                "start": 0,
-                "stop": tot_length,
-                "file": None,
-                "lvl": lvl,
-                "orig_start": None,
-                "orig_stop": None,
-                "channel": None,
-            }
+                    "start": 0,
+                    "stop": tot_length,
+                    "file": None,
+                    "lvl": None,
+                    "orig_start": None,
+                    "orig_stop": None,
+                    "channel": None,
+                }
 
         dataset_metadata["session_{}".format(n_sess)] = activity
 

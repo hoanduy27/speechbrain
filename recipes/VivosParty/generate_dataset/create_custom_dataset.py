@@ -82,13 +82,18 @@ for f in params["noises_folders"]:
 rirs = []
 for f in params["rirs_folders"]:
     rirs.extend(get_all_files(f, match_and=[".wav"]))
-musics = []
-for f in params["music_folders"]:
-    musics.extend(get_all_files(f, match_and=[".wav"]))
+vocal_musics = []
+for f in params["vocal_musics_folders"]:
+    vocal_musics.extend(get_all_files(f, match_and=[".wav"]))
+
+off_vocal_musics = []
+for f in params["off_vocal_musics_folders"]:
+    off_vocal_musics.extend(get_all_files(f, match_and=[".wav"]))
 # we split them in training, dev and eval
 noises = split_list(noises, split_f)
 rirs = split_list(rirs, split_f)
-musics = split_list(musics, split_f)
+vocal_musics = split_list(vocal_musics, split_f)
+off_vocal_musics = split_list(off_vocal_musics, split_f)
 
 # do the same for background noises
 if params["backgrounds_root"]:
@@ -113,7 +118,8 @@ for indx, split in enumerate(["train", "dev", "eval"]):
         c_words,
         rirs[indx],
         noises[indx],
-        musics[indx],
+        vocal_musics[indx],
+        off_vocal_musics[indx],
         backgrounds[indx],
     )
 
